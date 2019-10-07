@@ -41,6 +41,7 @@ jobs:
             - v5-android-
       - attach_workspace:
           at: ~/project
+      - run: make bootstrap-circle
       - run: ./gradlew checkstyle
       - run: ./gradlew lintExternalRelease
       - run: ./gradlew testExternalRelease -PdisablePreDex
@@ -137,27 +138,27 @@ workflows:
       - test:
           requires:
             - build
-      - alpha:
-          requires:
-            - build
-            - test
-          filters:
-            branches:
-              only: alpha
-      - create_internal:
-          requires:
-            - build
-            - test
-          filters:
-            branches:
-              only: master
-      - internal:
-          requires:
-            - build
-            - test
-          filters:
-            branches:
-              only: internal
+      #- alpha:
+          #requires:
+            #- build
+            #- test
+          #filters:
+            #branches:
+              #only: alpha
+      #- create_internal:
+          #requires:
+            #- build
+            #- test
+          #filters:
+            #branches:
+              #only: master
+      #- internal:
+          #requires:
+            #- build
+            #- test
+          #filters:
+            #branches:
+              #only: internal
 
 experimental:
   notify:
