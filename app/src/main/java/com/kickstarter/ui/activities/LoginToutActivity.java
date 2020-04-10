@@ -3,10 +3,16 @@ package com.kickstarter.ui.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.OAuthProvider;
 import com.kickstarter.R;
 import com.kickstarter.libs.ActivityRequestCodes;
 import com.kickstarter.libs.BaseActivity;
@@ -19,7 +25,10 @@ import com.kickstarter.ui.toolbars.LoginToolbar;
 import com.kickstarter.ui.views.LoginPopupMenu;
 import com.kickstarter.viewmodels.LoginToutViewModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,9 +44,11 @@ import static com.kickstarter.libs.utils.TransitionUtils.transition;
 
 @RequiresActivityViewModel(LoginToutViewModel.ViewModel.class)
 public final class LoginToutActivity extends BaseActivity<LoginToutViewModel.ViewModel> {
+  private static final String TAG = "izzytest";
   @Bind(R.id.disclaimer_text_view) TextView disclaimerTextView;
   @Bind(R.id.login_button) Button loginButton;
   @Bind(R.id.facebook_login_button) Button facebookButton;
+  @Bind(R.id.apple_sign_in_button) Button appleSignInButton;
   @Bind(R.id.sign_up_button) Button signupButton;
   @Bind(R.id.help_button) TextView helpButton;
   @Bind(R.id.login_toolbar) LoginToolbar loginToolbar;
@@ -96,6 +107,42 @@ public final class LoginToutActivity extends BaseActivity<LoginToutViewModel.Vie
       .compose(bindToLifecycle())
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe(errorMessage -> ViewUtils.showDialog(this, this.loginErrorTitleString, errorMessage));
+
+    this.appleSignInButton.setOnClickListener(v -> {
+      final OAuthProvider.Builder provider = OAuthProvider.newBuilder("apple.com");
+      final List<String> scopes =
+        new ArrayList<String>() {
+          {
+            add("email");
+            add("name");
+          }
+        };
+      provider.setScopes(scopes);
+      provider.addCustomParameter("locale", Locale.getDefault().getLanguage());
+
+      final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+      final Task<AuthResult> pending = mAuth.getPendingAuthResult();
+      if (pending != null) {
+        pending.addOnSuccessListener(authResult -> {
+          Log.d(TAG, "checkPending:onSuccess:" + authResult);
+          // Get the user profile with authResult.getUser() and
+          // authResult.getAdditionalUserInfo(), and the ID
+          // token from Apple with authResult.getCredential().
+        }).addOnFailureListener(e -> Log.w(TAG, "checkPending:onFailure", e));
+      } else {
+        Log.d(TAG, "pending: null");
+        mAuth.startActivityForSignInWithProvider(this, provider.build())
+          .addOnSuccessListener(
+            authResult -> {
+              // Sign-in successful!
+              Log.d(TAG, "activitySignIn:onSuccess:" + authResult.getUser());
+              FirebaseUser user = authResult.getUser();
+              // ...
+            })
+          .addOnFailureListener(
+            e -> Log.w(TAG, "activitySignIn:onFailure", e));
+      }
+    });
   }
 
   private @NonNull Observable<String> showErrorMessageToasts() {

@@ -49,11 +49,25 @@
         android:gravity="center"
         android:text="@string/Facebook_login_disclaimer_update" />
 
+      <com.google.android.material.button.MaterialButton
+        app:icon="@drawable/ic_apple_logo_black"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/grid_2"
+        android:id="@+id/apple_sign_in_button"
+        app:backgroundTint="@color/ksr_soft_black"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign in with Apple"
+        android:layout_marginBottom="@dimen/grid_1" />
+
+      <include layout="@layout/horizontal_line_1dp_view"/>
+
       <Button
+        android:layout_marginTop="@dimen/grid_1"
         android:id="@+id/login_button"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_marginBottom="@dimen/grid_3"
+        android:layout_marginBottom="@dimen/grid_1"
         android:text="@string/login_buttons_log_in_email" />
 
       <Button
