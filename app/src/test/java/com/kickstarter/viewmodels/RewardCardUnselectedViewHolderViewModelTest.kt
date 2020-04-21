@@ -4,218 +4,45 @@ import android.util.Pair
 import com.kickstarter.KSRobolectricTestCase
 import com.kickstarter.R
 import com.kickstarter.libs.Environment
-import com.kickstarter.mock.factories.BackingFactory
-import com.kickstarter.mock.factories.PaymentSourceFactory
 import com.kickstarter.mock.factories.ProjectFactory
 import com.kickstarter.mock.factories.StoredCardFactory
+import com.kickstarter.models.StoredCard
 import com.kickstarter.models.Backing
 import com.stripe.android.model.Card
 import org.junit.Test
 import rx.observers.TestSubscriber
 import java.util.*
 
-class RewardCardViewHolderViewModelTest : KSRobolectricTestCase() {
+class RewardCardUnselectedViewHolderViewModelTest : KSRobolectricTestCase() {
 
-    private lateinit var vm: RewardCardViewHolderViewModel.ViewModel
+    private lateinit var vm: RewardCardUnselectedViewHolderViewModel.ViewModel
 
-    private val buttonCTA = TestSubscriber.create<Int>()
-    private val buttonEnabled = TestSubscriber.create<Boolean>()
     private val expirationDate = TestSubscriber.create<String>()
     private val failedIndicatorIconIsVisible = TestSubscriber.create<Boolean>()
-    private val id = TestSubscriber.create<String>()
+    private val isClickable = TestSubscriber.create<Boolean>()
     private val issuer = TestSubscriber.create<String>()
     private val issuerImage = TestSubscriber.create<Int>()
+    private val issuerImageAlpha = TestSubscriber.create<Float>()
+    private val lastFourTextColor = TestSubscriber.create<Int>()
     private val lastFour = TestSubscriber.create<String>()
     private val notAvailableCopyIsVisible = TestSubscriber.create<Boolean>()
-    private val projectCountry = TestSubscriber.create<String>()
+    private val notifyDelegateCardSelected = TestSubscriber.create<Pair<StoredCard, Int>>()
+    private val selectImageIsVisible = TestSubscriber.create<Boolean>()
 
     private fun setUpEnvironment(environment: Environment) {
-        this.vm = RewardCardViewHolderViewModel.ViewModel(environment)
+        this.vm = RewardCardUnselectedViewHolderViewModel.ViewModel(environment)
 
-        this.vm.outputs.buttonCTA().subscribe(this.buttonCTA)
-        this.vm.outputs.buttonEnabled().subscribe(this.buttonEnabled)
         this.vm.outputs.expirationDate().subscribe(this.expirationDate)
         this.vm.outputs.failedIndicatorIconIsVisible().subscribe(this.failedIndicatorIconIsVisible)
-        this.vm.outputs.id().subscribe(this.id)
+        this.vm.outputs.isClickable().subscribe(this.isClickable)
         this.vm.outputs.issuer().subscribe(this.issuer)
         this.vm.outputs.issuerImage().subscribe(this.issuerImage)
+        this.vm.outputs.issuerImageAlpha().subscribe(this.issuerImageAlpha)
+        this.vm.outputs.lastFourTextColor().subscribe(this.lastFourTextColor)
         this.vm.outputs.lastFour().subscribe(this.lastFour)
         this.vm.outputs.notAvailableCopyIsVisible().subscribe(this.notAvailableCopyIsVisible)
-        this.vm.outputs.projectCountry().subscribe(this.projectCountry)
-    }
-
-    @Test
-    fun testButtonCTA_whenCardIsAccepted() {
-        setUpEnvironment(environment())
-        val creditCard = StoredCardFactory.discoverCard()
-
-        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
-
-        this.buttonCTA.assertValue(R.string.Select)
-    }
-
-    @Test
-    fun testButtonCTA_whenCardNotAccepted() {
-        setUpEnvironment(environment())
-
-        val creditCard = StoredCardFactory.discoverCard()
-
-        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.mxProject()))
-
-        this.buttonCTA.assertValue(R.string.Not_available)
-    }
-
-    @Test
-    fun testButtonCTA_whenCardIsBackingPaymentSource_andBackingIsErrored() {
-        setUpEnvironment(environment())
-        val visa = StoredCardFactory.visa()
-
-        val paymentSource = PaymentSourceFactory.visa()
-                .toBuilder()
-                .id(visa.id())
-                .build()
-        val backing = BackingFactory.backing()
-                .toBuilder()
-                .paymentSource(paymentSource)
-                .status(Backing.STATUS_ERRORED)
-                .build()
-        val project = ProjectFactory.backedProject()
-                .toBuilder()
-                .backing(backing)
-                .build()
-
-        this.vm.inputs.configureWith(Pair(visa, project))
-
-        this.buttonCTA.assertValue(R.string.Select)
-    }
-
-    @Test
-    fun testButtonCTA_whenCardIsBackingPaymentSource_andBackingIsNotErrored() {
-        setUpEnvironment(environment())
-        val visa = StoredCardFactory.visa()
-
-        val paymentSource = PaymentSourceFactory.visa()
-                .toBuilder()
-                .id(visa.id())
-                .build()
-        val backing = BackingFactory.backing()
-                .toBuilder()
-                .paymentSource(paymentSource)
-                .build()
-        val project = ProjectFactory.backedProject()
-                .toBuilder()
-                .backing(backing)
-                .build()
-
-        this.vm.inputs.configureWith(Pair(visa, project))
-
-        this.buttonCTA.assertValue(R.string.Selected)
-    }
-
-    @Test
-    fun testButtonCTA_whenCardIsNotBackingPaymentSource() {
-        setUpEnvironment(environment())
-        val discover = StoredCardFactory.discoverCard()
-
-        val backing = BackingFactory.backing()
-                .toBuilder()
-                .paymentSource(PaymentSourceFactory.visa())
-                .build()
-        val project = ProjectFactory.backedProject()
-                .toBuilder()
-                .backing(backing)
-                .build()
-
-        this.vm.inputs.configureWith(Pair(discover, project))
-
-        this.buttonCTA.assertValue(R.string.Select)
-    }
-
-    @Test
-    fun testButtonEnabled_whenCardIsAccepted() {
-        setUpEnvironment(environment())
-        val creditCard = StoredCardFactory.discoverCard()
-
-        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
-
-        this.buttonEnabled.assertValue(true)
-    }
-
-    @Test
-    fun testButtonEnabled_whenCardNotAccepted() {
-        setUpEnvironment(environment())
-
-        val creditCard = StoredCardFactory.discoverCard()
-
-        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.mxProject()))
-
-        this.buttonEnabled.assertValue(false)
-    }
-
-    @Test
-    fun testButtonEnabled_whenCardIsBackingPaymentSource_andBackingIsErrored() {
-        setUpEnvironment(environment())
-        val visa = StoredCardFactory.visa()
-
-        val paymentSource = PaymentSourceFactory.visa()
-                .toBuilder()
-                .id(visa.id())
-                .build()
-        val backing = BackingFactory.backing()
-                .toBuilder()
-                .paymentSource(paymentSource)
-                .status(Backing.STATUS_ERRORED)
-                .build()
-        val project = ProjectFactory.backedProject()
-                .toBuilder()
-                .backing(backing)
-                .build()
-
-        this.vm.inputs.configureWith(Pair(visa, project))
-
-        this.buttonEnabled.assertValue(true)
-    }
-
-    @Test
-    fun testButtonEnabled_whenCardIsBackingPaymentSource_andBackingIsNotErrored() {
-        setUpEnvironment(environment())
-        val visa = StoredCardFactory.visa()
-
-        val paymentSource = PaymentSourceFactory.visa()
-                .toBuilder()
-                .id(visa.id())
-                .build()
-        val backing = BackingFactory.backing()
-                .toBuilder()
-                .paymentSource(paymentSource)
-                .build()
-        val project = ProjectFactory.backedProject()
-                .toBuilder()
-                .backing(backing)
-                .build()
-
-        this.vm.inputs.configureWith(Pair(visa, project))
-
-        this.buttonEnabled.assertValue(false)
-    }
-
-    @Test
-    fun testButtonEnabled_whenCardNotBackingPaymentSource() {
-        setUpEnvironment(environment())
-        val discover = StoredCardFactory.discoverCard()
-
-        val backing = BackingFactory.backing()
-                .toBuilder()
-                .paymentSource(PaymentSourceFactory.visa())
-                .build()
-        val project = ProjectFactory.backedProject()
-                .toBuilder()
-                .backing(backing)
-                .build()
-
-        this.vm.inputs.configureWith(Pair(discover, project))
-
-        this.buttonEnabled.assertValue(true)
+        this.vm.outputs.notifyDelegateCardSelected().subscribe(this.notifyDelegateCardSelected)
+        this.vm.outputs.selectImageIsVisible().subscribe(this.selectImageIsVisible)
     }
 
     @Test
@@ -231,6 +58,56 @@ class RewardCardViewHolderViewModelTest : KSRobolectricTestCase() {
         this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
 
         this.expirationDate.assertValue("03/2019")
+    }
+
+    @Test
+    fun testIsClickable_whenCardIsAllowedType() {
+        setUpEnvironment(environment())
+        val creditCard = StoredCardFactory.discoverCard()
+
+        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
+
+        this.isClickable.assertValue(true)
+    }
+
+    @Test
+    fun testIsClickable_whenCardIsNotAllowedType() {
+        setUpEnvironment(environment())
+        val creditCard = StoredCardFactory.discoverCard()
+
+        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.mxProject()))
+
+        this.isClickable.assertValue(false)
+    }
+
+    @Test
+    fun testIssuer() {
+        setUpEnvironment(environment())
+        val creditCard = StoredCardFactory.discoverCard()
+
+        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
+
+        this.issuer.assertValue(Card.CardBrand.DISCOVER)
+    }
+
+    @Test
+    fun testIssuerImage() {
+        setUpEnvironment(environment())
+        val creditCard = StoredCardFactory.discoverCard()
+
+        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
+
+        this.issuerImage.assertValue(R.drawable.discover_md)
+    }
+
+    @Test
+    fun testIssuerImageAlpha_whenCardIsAllowedType() {
+        setUpEnvironment(environment())
+        val creditCard = StoredCardFactory.discoverCard()
+
+        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
+
+        this.issuerImageAlpha.assertValue(1.0f)
     }
 
     @Test
@@ -320,33 +197,13 @@ class RewardCardViewHolderViewModelTest : KSRobolectricTestCase() {
     }
 
     @Test
-    fun testId() {
+    fun testIssuerImageAlpha_whenCardIsNotAllowedType() {
         setUpEnvironment(environment())
         val creditCard = StoredCardFactory.discoverCard()
 
-        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
+        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.mxProject()))
 
-        this.id.assertValue(creditCard.id())
-    }
-
-    @Test
-    fun testIssuer() {
-        setUpEnvironment(environment())
-        val creditCard = StoredCardFactory.discoverCard()
-
-        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
-
-        this.issuer.assertValue(Card.CardBrand.DISCOVER)
-    }
-
-    @Test
-    fun testIssuerImage() {
-        setUpEnvironment(environment())
-        val creditCard = StoredCardFactory.discoverCard()
-
-        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
-
-        this.issuerImage.assertValue(R.drawable.discover_md)
+        this.issuerImageAlpha.assertValue(.5f)
     }
 
     @Test
@@ -358,6 +215,26 @@ class RewardCardViewHolderViewModelTest : KSRobolectricTestCase() {
         this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
 
         this.lastFour.assertValue("1234")
+    }
+
+    @Test
+    fun testLastFourTextColor_whenCardIsAllowedType() {
+        setUpEnvironment(environment())
+        val creditCard = StoredCardFactory.discoverCard()
+
+        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
+
+        this.lastFourTextColor.assertValue(R.color.text_primary)
+    }
+
+    @Test
+    fun testLastFourTextColor_whenCardIsNotAllowedType() {
+        setUpEnvironment(environment())
+        val creditCard = StoredCardFactory.discoverCard()
+
+        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.mxProject()))
+
+        this.lastFourTextColor.assertValue(R.color.text_secondary)
     }
 
     @Test
@@ -383,14 +260,35 @@ class RewardCardViewHolderViewModelTest : KSRobolectricTestCase() {
     }
 
     @Test
-    fun testProjectCountry() {
+    fun testNotifyDelegateCardSelected() {
         setUpEnvironment(environment())
 
+        val creditCard = StoredCardFactory.visa()
+
+        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
+
+        this.vm.inputs.cardSelected(2)
+        this.notifyDelegateCardSelected.assertValue(Pair(creditCard, 2))
+    }
+
+    @Test
+    fun testSelectImageIsVisible_whenCardIsAllowedType() {
+        setUpEnvironment(environment())
         val creditCard = StoredCardFactory.discoverCard()
 
         this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.project()))
 
-        this.projectCountry.assertValue("United States")
+        this.selectImageIsVisible.assertValue(true)
+    }
+
+    @Test
+    fun testSelectImageIsVisible_whenCardIsNotAllowedType() {
+        setUpEnvironment(environment())
+        val creditCard = StoredCardFactory.discoverCard()
+
+        this.vm.inputs.configureWith(Pair(creditCard, ProjectFactory.mxProject()))
+
+        this.selectImageIsVisible.assertValue(false)
     }
 
 }
