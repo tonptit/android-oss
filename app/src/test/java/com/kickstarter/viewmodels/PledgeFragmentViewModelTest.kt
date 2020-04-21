@@ -620,8 +620,6 @@ class PledgeFragmentViewModelTest : KSRobolectricTestCase() {
 
         this.continueButtonIsEnabled.assertNoValues()
         this.continueButtonIsGone.assertValue(true)
-        this.deliveryDividerIsGone.assertValue(true)
-        this.deliverySectionIsGone.assertValue(true)
         this.paymentContainerIsGone.assertValue(false)
         this.pledgeButtonIsEnabled.assertValue(true)
         this.pledgeMaximumIsGone.assertNoValues()
@@ -630,9 +628,6 @@ class PledgeFragmentViewModelTest : KSRobolectricTestCase() {
         this.shippingRulesSectionIsGone.assertValue(true)
         this.shippingSummaryIsGone.assertValue(false)
         this.totalDividerIsGone.assertValue(true)
-        this.updatePledgeButtonIsEnabled.assertNoValues()
-        this.updatePledgeButtonIsGone.assertValue(true)
-        this.updatePledgeProgressIsGone.assertNoValues()
 
         this.koalaTest.assertNoValues()
         this.lakeTest.assertNoValues()
@@ -655,8 +650,6 @@ class PledgeFragmentViewModelTest : KSRobolectricTestCase() {
 
         this.continueButtonIsEnabled.assertNoValues()
         this.continueButtonIsGone.assertValue(true)
-        this.deliveryDividerIsGone.assertValue(true)
-        this.deliverySectionIsGone.assertValue(true)
         this.paymentContainerIsGone.assertValue(false)
         this.pledgeButtonIsEnabled.assertValue(true)
         this.pledgeMaximumIsGone.assertNoValues()
@@ -665,9 +658,6 @@ class PledgeFragmentViewModelTest : KSRobolectricTestCase() {
         this.shippingRulesSectionIsGone.assertValue(true)
         this.shippingSummaryIsGone.assertValue(true)
         this.totalDividerIsGone.assertValue(true)
-        this.updatePledgeButtonIsEnabled.assertNoValues()
-        this.updatePledgeButtonIsGone.assertValue(true)
-        this.updatePledgeProgressIsGone.assertNoValues()
 
         this.koalaTest.assertNoValues()
         this.lakeTest.assertNoValues()
@@ -744,7 +734,7 @@ class PledgeFragmentViewModelTest : KSRobolectricTestCase() {
         val backedProject = testData.project
         val noReward = testData.reward
 
-        setUpEnvironment(environment(), reward, backedProject, PledgeReason.FIX_PLEDGE)
+        setUpEnvironment(environment(), noReward, backedProject, PledgeReason.FIX_PLEDGE)
 
         this.pledgeSummaryAmount.assertValue("$10")
     }
@@ -1750,42 +1740,6 @@ class PledgeFragmentViewModelTest : KSRobolectricTestCase() {
     }
 
     @Test
-    fun testShowUpdatePaymentSuccess_whenFixingPaymentMethod() {
-        val testData = setUpBackedNoRewardTestData()
-        val backedProject = testData.project
-        val noReward = testData.reward
-        val storedCards = testData.storedCards
-
-        val environment = environment()
-                .toBuilder()
-                .currentUser(MockCurrentUser(UserFactory.user()))
-                .apolloClient(object : MockApolloClient() {
-                    override fun getStoredCards(): Observable<List<StoredCard>> {
-                        return Observable.just(storedCards)
-                    }
-
-                    override fun updateBacking(updateBackingData: UpdateBackingData): Observable<Checkout> {
-                        return Observable.error(Exception("womp"))
-                    }
-                }).build()
-
-        setUpEnvironment(environment, noReward, backedProject, PledgeReason.UPDATE_PAYMENT)
-
-        this.showSelectedCard.assertValue(Pair(1, CardState.SELECTED))
-
-        this.vm.inputs.cardSelected(storedCards[0], 0)
-
-        this.showSelectedCard.assertValues(Pair(1, CardState.SELECTED), Pair(0, CardState.SELECTED))
-
-        this.vm.inputs.pledgeButtonClicked()
-
-        this.pledgeButtonIsEnabled.assertValues(true, false, true)
-        this.pledgeProgressIsGone.assertValues(false, true)
-        this.showUpdatePaymentError.assertValueCount(1)
-        this.koalaTest.assertNoValues()
-    }
-
-    @Test
     fun testShowUpdatePaymentSuccess_whenUpdatingPaymentMethod() {
         val testData = setUpBackedNoRewardTestData()
         val backedProject = testData.project
@@ -1827,7 +1781,7 @@ class PledgeFragmentViewModelTest : KSRobolectricTestCase() {
                 .apolloClient(apolloClientWithStoredCards(storedCards))
                 .build()
 
-        setUpEnvironment(environment, noReward, backedProject, PledgeReason.UPDATE_PAYMENT)
+        setUpEnvironment(environment, noReward, backedProject, PledgeReason.FIX_PLEDGE)
 
         this.showSelectedCard.assertValue(Pair(1, CardState.SELECTED))
 
