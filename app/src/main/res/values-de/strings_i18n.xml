@@ -252,6 +252,7 @@ Bitte antippen und erneut versuchen.</string>
   <string name="Happening_newsletter" formatted="false">Abonniere diesen Newsletter und du bekommst ein- oder zweimal die Woche einen interessanten Mix aus neuen Projekten, Stories und visueller Inspiration.</string>
   <string name="Help" formatted="false">Hilfe</string>
   <string name="Help_center" formatted="false">Hilfe-Center</string>
+  <string name="Help_local_businesses_keep_the_lights" formatted="false">Help local businesses keep the lights on during COVID-19 closures.</string>
   <string name="Hide_password" formatted="false">Passwort verbergen</string>
   <string name="Home" formatted="false">Home</string>
   <string name="How_backers_found_your_project" formatted="false">Wie Unterstützer dein Projekt gefunden haben</string>
@@ -267,6 +268,7 @@ Bitte antippen und erneut versuchen.</string>
   <string name="Individual_Emails" formatted="false">Individuelle E-Mails</string>
   <string name="Info" formatted="false">Info</string>
   <string name="Introduce_yourself" formatted="false">Stelle dich vor</string>
+  <string name="Introducing_Lights_On" formatted="false">Introducing Lights On</string>
   <string name="It_may_take_up_to_24_hours_to_collect_your_data" formatted="false">Die Zusammenstellung deiner Daten kann bis zu 24 Stunden dauern. Sobald sie zum Download bereitstehen, werden wir dir eine Anleitung dazu per E-Mail schicken. Solltest du nichts von uns hören, versuche es von hier aus noch einmal.</string>
   <string name="Its_a_way_to_bring_creative_projects_to_life" formatted="false">Es ist eine Plattform, um kreative Projekte ins Leben zu rufen.</string>
   <string name="Its_a_way_to_bring_creative_projects_to_life_Learn_more_about_accountability" formatted="false">Es ist eine Plattform, um kreative Projekte zu verwirklichen. &lt;a href="%{trust_link}">Hier findest du mehr Info zur Rechenschaftspflicht&lt;/a></string>
@@ -510,6 +512,7 @@ Bitte antippen und erneut versuchen.</string>
   <string name="Ships_worldwide" formatted="false">Weltweiter Versand</string>
   <string name="Show_me_projects" formatted="false">Projekte anzeigen</string>
   <string name="Show_password" formatted="false">Passwort anzeigen</string>
+  <string name="Show_up_for_the_spaces_you_love" formatted="false">Show up for the spaces you love</string>
   <string name="Shows_list_of_subcategories" formatted="false">Unterkategorien anzeigen.</string>
   <string name="Sign_up" formatted="false">Registrieren</string>
   <string name="Sign_up_newsletter" formatted="false">Abonniere unsere "Team Favoriten" und wir schicken dir einmal pro Woche eine Auswahl von bemerkenswerten Projekten, handverlesen von unserem Team.</string>
@@ -530,6 +533,7 @@ Bitte antippen und erneut versuchen.</string>
   <string name="Subscribes_to_upcoming_lives_streams" formatted="false">Zukünftige Live-Streams abonnieren.</string>
   <string name="Successful_projects_have_been_created_on_kickstarter" formatted="false">Projekte wurden erfolgreich auf Kickstarter finanziert.</string>
   <string name="Support_creative_independence" formatted="false">Unterstütze kreative Unabhängigkeit</string>
+  <string name="Support_creative_spaces_and_businesses_affected_by" formatted="false">Unterstütze kreative Lokale und Geschäfte, ddie von COVID-19 betroffen sind. Sieh dir Projekte in deiner Nähe an. ▸</string>
   <string name="Survey" formatted="false">Befragung</string>
   <string name="Tap_the_heart_on_a_project_to_get_notified" formatted="false">Tippe auf das Herz neben einem Projekt und wir benachrichtigen dich 48 Stunden, bevor es abläuft.</string>
   <string name="Tap_the_heart_on_each_project_page_to_save_it" formatted="false">Klicke einfach auf das Herz auf der Projektseite, um dieses Projekt zu speichern. Wir werden dir 48 Stunden vor Ablauf eine Benachrichtigung schicken.</string>
