@@ -2,8 +2,7 @@ package com.kickstarter.viewmodels
 
 import com.kickstarter.libs.ActivityViewModel
 import com.kickstarter.libs.Environment
-import com.kickstarter.libs.rx.transformers.Transformers.errors
-import com.kickstarter.libs.rx.transformers.Transformers.values
+import com.kickstarter.libs.rx.transformers.Transformers.*
 import com.kickstarter.libs.utils.ObjectUtils
 import com.kickstarter.models.Category
 import com.kickstarter.services.ApiClientType
@@ -18,6 +17,12 @@ import rx.subjects.PublishSubject
 
 interface EditorialViewModel {
     interface Inputs {
+        /** Call when we get the user's current location. */
+        fun location(latAndLong: android.util.Pair<Double, Double>)
+
+        /** Call when the user has acknowledged the location heads up dialog. */
+        fun locationDialogConfirmed()
+
         /** Call when the user clicks the retry container. */
         fun retryContainerClicked()
     }
@@ -35,6 +40,9 @@ interface EditorialViewModel {
         /** Emits when we should refresh the [com.kickstarter.ui.fragments.DiscoveryFragment]. */
         fun refreshDiscoveryFragment(): Observable<Void>
 
+        /** Emits when we should request the user's location. */
+        fun requestLocation(): Observable<Void>
+
         /** Emits a [Boolean] determining if the retry container should be visible. */
         fun retryContainerIsGone(): Observable<Boolean>
 
@@ -46,12 +54,15 @@ interface EditorialViewModel {
     }
 
     class ViewModel(val environment: Environment) : ActivityViewModel<EditorialActivity>(environment), Inputs, Outputs {
+        private val location: PublishSubject<android.util.Pair<Double, Double>> = PublishSubject.create()
+        private val locationDialogConfirmed: PublishSubject<Void> = PublishSubject.create()
         private val retryContainerClicked: PublishSubject<Void> = PublishSubject.create()
 
         private val description: BehaviorSubject<Int> = BehaviorSubject.create()
         private val discoveryParams: BehaviorSubject<DiscoveryParams> = BehaviorSubject.create()
         private val graphic: BehaviorSubject<Int> = BehaviorSubject.create()
         private val refreshDiscoveryFragment: PublishSubject<Void> = PublishSubject.create()
+        private val requestLocation: PublishSubject<Void> = PublishSubject.create()
         private val retryContainerIsGone: BehaviorSubject<Boolean> = BehaviorSubject.create()
         private val rootCategories: BehaviorSubject<List<Category>> = BehaviorSubject.create()
         private val title: BehaviorSubject<Int> = BehaviorSubject.create()
@@ -81,10 +92,25 @@ interface EditorialViewModel {
                     .compose(bindToLifecycle())
                     .subscribe { this.retryContainerIsGone.onNext(false) }
 
-            editorial
+            val discoveryParams = editorial
                     .map { discoveryParams(it) }
+
+            discoveryParams
                     .compose(bindToLifecycle())
                     .subscribe(this.discoveryParams)
+
+            discoveryParams
+                    .compose<android.util.Pair<DiscoveryParams, String>>(takePairWhen(this.location
+                            .map { arrayOf(it.first, it.second).joinToString(",") }))
+                    .map { it.first.toBuilder().ll(it.second).build() }
+                    .compose(bindToLifecycle())
+                    .subscribe(this.discoveryParams)
+
+            Observable.merge(discoveryParams,
+                    discoveryParams.compose(takeWhen(this.locationDialogConfirmed)))
+                    .filter { it.sort() == DiscoveryParams.Sort.DISTANCE }
+                    .compose(bindToLifecycle())
+                    .subscribe { this.requestLocation.onNext(null) }
 
             editorial
                     .map { it.graphic }
@@ -121,6 +147,10 @@ interface EditorialViewModel {
                     .share()
         }
 
+        override fun location(latAndLong: android.util.Pair<Double, Double>) = this.location.onNext(latAndLong)
+
+        override fun locationDialogConfirmed() = this.locationDialogConfirmed.onNext(null)
+
         override fun retryContainerClicked() = this.retryContainerClicked.onNext(null)
 
         override fun description(): Observable<Int> = this.description
@@ -130,6 +160,8 @@ interface EditorialViewModel {
         override fun graphic(): Observable<Int> = this.graphic
 
         override fun refreshDiscoveryFragment(): Observable<Void> = this.refreshDiscoveryFragment
+
+        override fun requestLocation(): Observable<Void> = this.requestLocation
 
         override fun retryContainerIsGone(): Observable<Boolean> = this.retryContainerIsGone
 

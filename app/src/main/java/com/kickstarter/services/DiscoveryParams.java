@@ -33,6 +33,7 @@ public abstract class DiscoveryParams implements Parcelable {
   public abstract @Nullable String categoryParam();
   public abstract @Nullable Location location();
   public abstract @Nullable String locationParam();
+  public abstract @Nullable String ll();
   public abstract @Nullable Integer page();
   public abstract @Nullable Integer perPage();
   public abstract @Nullable Integer pledged();
@@ -188,6 +189,11 @@ public abstract class DiscoveryParams implements Parcelable {
       builder = builder.locationParam(locationParam);
     }
 
+    final String llParam = uri.getQueryParameter("ll");
+    if (llParam != null) {
+      builder = builder.ll(llParam);
+    }
+
     final Integer page = ObjectUtils.toInteger(uri.getQueryParameter("page"));
     if (page != null) {
       builder = builder.page(page);
@@ -253,6 +259,7 @@ public abstract class DiscoveryParams implements Parcelable {
     public abstract Builder categoryParam(String __);
     public abstract Builder location(Location __);
     public abstract Builder locationParam(String __);
+    public abstract Builder ll(String __);
     public abstract Builder page(Integer __);
     public abstract Builder perPage(Integer __);
     public abstract Builder pledged(Integer __);
@@ -283,6 +290,9 @@ public abstract class DiscoveryParams implements Parcelable {
       }
       if (other.categoryParam() != null) {
         retVal = retVal.categoryParam(other.categoryParam());
+      }
+      if (other.ll() != null) {
+        retVal = retVal.ll(other.ll());
       }
       if (other.location() != null) {
         retVal = retVal.location(other.location());
@@ -354,6 +364,10 @@ public abstract class DiscoveryParams implements Parcelable {
 
         if (categoryParam() != null) {
           put("category_id", categoryParam());
+        }
+
+        if (ll() != null) {
+          put("ll", String.valueOf(ll()));
         }
 
         if (location() != null) {
@@ -463,6 +477,8 @@ public abstract class DiscoveryParams implements Parcelable {
       return category().isRoot() && !isParentFilter && !isToolbar
         ? ksString.format(context.getString(R.string.All_category_name_Projects), "category_name", category().name())
         : category().name();
+    } else if (ll() != null) {
+      return context.getString(R.string.discovery_nearby);
     } else if (location() != null) {
       return location().displayableName();
     } else if (isTrue(recommended())) {
