@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
 import com.jakewharton.rxbinding.view.RxView
+import com.kickstarter.R
 import com.kickstarter.libs.ACCESS_COARSE_LOCATION
 import com.kickstarter.libs.BaseActivity
 import com.kickstarter.libs.qualifiers.RequiresActivityViewModel
@@ -20,10 +21,11 @@ import kotlinx.android.synthetic.main.activity_editorial.*
 
 @RequiresActivityViewModel(EditorialViewModel.ViewModel::class)
 class EditorialActivity : BaseActivity<EditorialViewModel.ViewModel>() {
+    private var hasSeenRationale = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.kickstarter.R.layout.activity_editorial)
+        setContentView(R.layout.activity_editorial)
 
         this.viewModel.outputs.description()
                 .compose(observeForUI())
@@ -72,26 +74,26 @@ class EditorialActivity : BaseActivity<EditorialViewModel.ViewModel>() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
+        when (requestCode) {
+            ACCESS_COARSE_LOCATION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    this.viewModel.inputs.locationDialogConfirmed()
+                }
+            }
+        }
     }
 
     private fun checkLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            // Permission is not granted
-            // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                            Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                AlertDialog.Builder(this, com.kickstarter.R.style.AlertDialog)
-                        .setCancelable(false)
-                        .setTitle(com.kickstarter.R.string.Remove_this_card)
-                        .setMessage(com.kickstarter.R.string.Are_you_sure_you_wish_to_remove_this_card)
-                        .setNegativeButton(com.kickstarter.R.string.No_thanks) { d, _ -> d.dismiss() }
-                        .setPositiveButton(com.kickstarter.R.string.general_alert_buttons_ok) { d, _ ->
+                            Manifest.permission.ACCESS_COARSE_LOCATION) && !this.hasSeenRationale) {
+                AlertDialog.Builder(this, R.style.AlertDialog)
+                        .setCancelable(true)
+                        .setMessage(R.string.Support_creative_spaces_and_businesses_affected_by)
+                        .setNegativeButton(R.string.No_thanks) { d, _ -> d.dismiss() }
+                        .setPositiveButton(R.string.general_alert_buttons_ok) { d, _ ->
                             run {
                                 this.viewModel.inputs.locationDialogConfirmed()
                                 d.dismiss()
@@ -99,25 +101,23 @@ class EditorialActivity : BaseActivity<EditorialViewModel.ViewModel>() {
                         }
                         .create()
                         .show()
+                this.hasSeenRationale = true
             } else {
-                // No explanation needed; request the permission
                 ActivityCompat.requestPermissions(this,
                          arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
                         ACCESS_COARSE_LOCATION)
             }
         } else {
-            // Permission has already been granted
             val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
             fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
                         if (location != null) {
-                            // Logic to handle location object
                             this.viewModel.inputs.location(Pair.create(location.latitude, location.longitude))
                         }
                     }
         }
     }
 
-    private fun discoveryFragment(): DiscoveryFragment = supportFragmentManager.findFragmentById(com.kickstarter.R.id.fragment_discovery) as DiscoveryFragment
+    private fun discoveryFragment(): DiscoveryFragment = supportFragmentManager.findFragmentById(R.id.fragment_discovery) as DiscoveryFragment
 
     //No-op because we have retry behavior
     override fun onNetworkConnectionChanged(isConnected: Boolean) {}

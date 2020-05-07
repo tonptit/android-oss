@@ -62,7 +62,7 @@ interface EditorialViewModel {
         private val discoveryParams: BehaviorSubject<DiscoveryParams> = BehaviorSubject.create()
         private val graphic: BehaviorSubject<Int> = BehaviorSubject.create()
         private val refreshDiscoveryFragment: PublishSubject<Void> = PublishSubject.create()
-        private val requestLocation: PublishSubject<Void> = PublishSubject.create()
+        private val requestLocation: BehaviorSubject<Void> = BehaviorSubject.create()
         private val retryContainerIsGone: BehaviorSubject<Boolean> = BehaviorSubject.create()
         private val rootCategories: BehaviorSubject<List<Category>> = BehaviorSubject.create()
         private val title: BehaviorSubject<Int> = BehaviorSubject.create()
