@@ -45,14 +45,14 @@ public class KSApplication extends MultiDexApplication {
     }
 
     JodaTimeAndroid.init(this);
+
+    FirebaseApp.initializeApp(this);
     FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true);
 
     this.component = DaggerApplicationComponent.builder()
       .applicationModule(new ApplicationModule(this))
       .build();
     component().inject(this);
-
-    FirebaseApp.initializeApp(this);
 
     if (!isInUnitTests()) {
       setVisitorCookie();
