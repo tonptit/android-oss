@@ -54,7 +54,7 @@ public class CurrentUser extends CurrentUserType {
 
     this.accessTokenPreference.set(accessToken);
     this.user.onNext(newUser);
-    this.deviceRegistrar.registerDevice();
+//    this.deviceRegistrar.registerDevice();
   }
 
   @Override

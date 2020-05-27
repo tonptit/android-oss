@@ -10,6 +10,9 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
+
 import com.apollographql.apollo.ApolloClient;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.FieldNamingPolicy;
@@ -41,8 +44,8 @@ import com.kickstarter.libs.OptimizelyExperimentsClient;
 import com.kickstarter.libs.PushNotifications;
 import com.kickstarter.libs.graphql.DateAdapter;
 import com.kickstarter.libs.graphql.DateTimeAdapter;
-import com.kickstarter.libs.graphql.Iso8601DateTimeAdapter;
 import com.kickstarter.libs.graphql.EmailAdapter;
+import com.kickstarter.libs.graphql.Iso8601DateTimeAdapter;
 import com.kickstarter.libs.models.OptimizelyEnvironment;
 import com.kickstarter.libs.preferences.BooleanPreference;
 import com.kickstarter.libs.preferences.BooleanPreferenceType;
@@ -93,8 +96,6 @@ import java.net.CookieManager;
 
 import javax.inject.Singleton;
 
-import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.CookieJar;
@@ -184,9 +185,7 @@ public final class ApplicationModule {
       .addInterceptor(ksRequestInterceptor);
 
     // Only log in debug mode to avoid leaking sensitive information.
-    if (build.isDebug()) {
-      builder.addInterceptor(httpLoggingInterceptor);
-    }
+    builder.addInterceptor(httpLoggingInterceptor);
 
     final OkHttpClient okHttpClient = builder.build();
 
