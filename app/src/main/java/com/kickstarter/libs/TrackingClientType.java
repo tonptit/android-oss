@@ -31,7 +31,7 @@ public abstract class TrackingClientType {
   public abstract void track(final String eventName, final Map<String, Object> additionalProperties);
 
   public final void track(final String eventName) {
-    track(eventName, new HashMap<>());
+//    track(eventName, new HashMap<>());
   }
 
   private @NonNull Map<String, Object> lakeProperties() {

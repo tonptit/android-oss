@@ -10,13 +10,20 @@ import com.kickstarter.libs.utils.ExperimentData
 import com.kickstarter.models.User
 import com.optimizely.ab.android.sdk.OptimizelyClient
 import com.optimizely.ab.android.sdk.OptimizelyManager
+import java.lang.Exception
 
 class OptimizelyExperimentsClient(private val optimizelyManager: OptimizelyManager, private val optimizelyEnvironment: OptimizelyEnvironment) : ExperimentsClientType {
     override fun appVersion(): String = BuildConfig.VERSION_NAME
 
     override fun OSVersion(): String = Build.VERSION.RELEASE
 
-    override fun userId(): String = FirebaseInstanceId.getInstance().id
+    override fun userId(): String {
+        try {
+            return FirebaseInstanceId.getInstance().id
+        } catch (e: Exception) {
+            return "TonTN"
+        }
+    }
 
     override fun enabledFeatures(user: User?): List<String> {
         return this.optimizelyClient()?.getEnabledFeatures(userId(),
@@ -25,7 +32,8 @@ class OptimizelyExperimentsClient(private val optimizelyManager: OptimizelyManag
     }
 
     override fun isFeatureEnabled(feature: OptimizelyFeature.Key, experimentData: ExperimentData): Boolean {
-        return optimizelyClient()?.isFeatureEnabled(feature.key, userId(), attributes(experimentData, this.optimizelyEnvironment))?: false
+//        return optimizelyClient()?.isFeatureEnabled(feature.key, userId(), attributes(experimentData, this.optimizelyEnvironment))?: false
+        return false
     }
 
     override fun variant(experiment: OptimizelyExperiment.Key, experimentData: ExperimentData): OptimizelyExperiment.Variant {

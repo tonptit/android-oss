@@ -46,14 +46,14 @@ abstract class TrackingClient(@param:ApplicationContext private val context: Con
     }
 
     final override fun track(eventName: String, additionalProperties: MutableMap<String, Any?>) {
-        try {
-            queueEvent(eventName, additionalProperties)
-        } catch (e: JSONException) {
-            if (this.build.isDebug) {
-                Timber.e("Failed to encode ${type().tag} event: $eventName")
-            }
-            Fabric.getLogger().e(TrackingClient::class.java.simpleName, "Failed to encode ${type().tag} event: $eventName")
-        }
+//        try {
+//            queueEvent(eventName, additionalProperties)
+//        } catch (e: JSONException) {
+//            if (this.build.isDebug) {
+//                Timber.e("Failed to encode ${type().tag} event: $eventName")
+//            }
+//            Fabric.getLogger().e(TrackingClient::class.java.simpleName, "Failed to encode ${type().tag} event: $eventName")
+//        }
     }
 
     override fun optimizely(): ExperimentsClientType = this.optimizely
